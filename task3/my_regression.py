@@ -1,7 +1,5 @@
 from numpy import append, genfromtxt, array, ndarray
 import pandas as pd
-from sklearn import linear_model
-import pandas as pd
 
 class MyRegression():
 
@@ -87,7 +85,8 @@ class MyRegression():
 
     def predict(self, data):
         preds = []
-        test = pd.DataFrame(data.as_matrix())
+        if type(data) == pd.DataFrame():
+            test = pd.DataFrame(data.as_matrix())
 
         for index, row in test.iterrows():
             values = row.tolist()
@@ -98,12 +97,6 @@ class MyRegression():
             preds.append(pred)
 
         return preds
-
-    def fit(self, X, y):
-        X = pd.DataFrame(X.as_matrix())
-        X["target"] = pd.DataFrame(y.as_matrix())
-
-        self.data = X.as_matrix()
 
     def run(self, learning_rate=0.00001, num_iterations=5000, cost_tolerance=float("-inf"), verbosity=False):
         initial_w_array = [0] * self.data.shape[1]
