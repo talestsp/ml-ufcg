@@ -1,12 +1,19 @@
-from numpy import append, genfromtxt, array
+from numpy import append, genfromtxt, array, ndarray
 import pandas as pd
 from sklearn import linear_model
 import pandas as pd
 
 class MyRegression():
 
-    def __init__(self, filepath, header=False):
-        self.data = self.load_data(filepath, header)
+    def __init__(self, data, header=False):
+        if type(data) == ndarray:
+            if header:
+                data = data[1:]
+            else:
+                data = data
+            self.data = data
+        elif type(data) == str:
+            self.data = self.load_data(data, header)
 
     def compute_error_for_given_function(self, w_array, array_points):
         total_error = 0
@@ -78,22 +85,27 @@ class MyRegression():
             print("---\nFinal RSS:", rss)
         return w_array, rss
 
-    def predict(self, filepath):
+    def predict(self, data):
         preds = []
-        test = pd.read_csv(filepath)
+        test = pd.DataFrame(data.as_matrix())
 
         for index, row in test.iterrows():
             values = row.tolist()
-            pred = 0
-            for i in range(len(self.w_array)):
-                pred += self.w_array[i] + values[i]
+            pred = self.w_array[0]
+            for i in range(len(self.w_array) - 1):
+                pred += self.w_array[i + 1] * values[i]
 
             preds.append(pred)
 
         return preds
 
+    def fit(self, X, y):
+        X = pd.DataFrame(X.as_matrix())
+        X["target"] = pd.DataFrame(y.as_matrix())
 
-    def run(self, learning_rate=0.0000001, num_iterations=1000, cost_tolerance=float("-inf"), verbosity=False):
+        self.data = X.as_matrix()
+
+    def run(self, learning_rate=0.00001, num_iterations=5000, cost_tolerance=float("-inf"), verbosity=False):
         initial_w_array = [0] * self.data.shape[1]
 
         self.w_array, self.rss = self.gradient_descent_runner(self.data, initial_w_array, learning_rate, num_iterations, cost_tolerance,
@@ -119,8 +131,9 @@ if __name__ == "__main__":
 
     coeffs, rss = mr.run(learning_rate=0.00000002, num_iterations=1000)
 
-    mr.predict("data/treino_clean.csv")
+    preds = mr.predict(pd.read_csv("data/treino_clean.csv"))
 
+    print(preds)
 
 
 
