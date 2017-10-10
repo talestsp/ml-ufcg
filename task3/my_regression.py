@@ -85,7 +85,7 @@ class MyRegression():
 
     def predict(self, data):
         preds = []
-        if type(data) == pd.DataFrame():
+        if type(data) == type(pd.DataFrame()):
             test = pd.DataFrame(data.as_matrix())
 
         for index, row in test.iterrows():
