@@ -1,7 +1,7 @@
-from numpy import append, genfromtxt, array, ndarray
+from numpy import append, genfromtxt, array, ndarray, e, exp, log
 import pandas as pd
 
-class MyRegression():
+class MyLogisticRegression():
 
     def __init__(self, data, header=False):
         if type(data) == ndarray:
@@ -13,18 +13,31 @@ class MyRegression():
         elif type(data) == str:
             self.data = self.load_data(data, header)
 
-    def compute_error_for_given_function(self, w_array, array_points):
-        total_error = 0
+    def score(self, w_array, array_points):
+        total_score = 0
         for i in range(len(array_points)):
             tuple_len = len(array_points[i])
             x_array = append(array(1), array_points[i, 0:tuple_len - 1])
-            y = array_points[i, tuple_len - 1]
 
-            total_error += (y - (self.hypothesis(w_array, x_array))) ** 2
+            total_score += self.sum_products(w_array, x_array)
 
-        return total_error / float(len(array_points))
+        return total_score
 
-    def hypothesis(self, w_array, x_array):
+    def sigmoid(self, score):
+        # print("score", score)
+        return 1 / (1 + (e ** (-score)))
+
+    def likelihood(self, w_array, array_points):
+        total = 1
+        for i in range(len(array_points)):
+            p_sigmoid = self.sigmoid(self.score(w_array, array_points))
+            # print("p_sigmoid", p_sigmoid)
+            # print("log(p_sigmoid)", log(p_sigmoid))
+            total = total * log(p_sigmoid)
+
+        return p_sigmoid
+
+    def sum_products(self, w_array, x_array):
         assert len(w_array) == len(x_array)
 
         total = 0
@@ -33,11 +46,9 @@ class MyRegression():
 
         return total
 
-
     def step_gradient(self, current_w_array, array_points, learning_rate):
         # gradient_descent
         w_gradient_array = [0] * array_points.shape[1]
-        N = float(len(array_points))
 
         for i in range(len(array_points)):
             tuple_len = len(array_points[i])
@@ -45,8 +56,9 @@ class MyRegression():
             x_array = append(array(1), array_points[i, 0:tuple_len - 1])
             y = array_points[i, tuple_len - 1]
 
-            for i in range(len(w_gradient_array)):
-                w_gradient_array[i] += self.gradiente_descent_calc(current_w_array, x_array, N, y, x_array[i])
+            for j in range(len(w_gradient_array)):
+                print(i)
+                w_gradient_array[j] += self.gradient_ascent_calc(current_w_array, array_points, y, x_array[j])
 
         # update coefficients
         new_w_array = [None] * len(current_w_array)
@@ -55,33 +67,34 @@ class MyRegression():
 
         return new_w_array
 
+    def gradient_ascent_calc(self, current_w_array, array_points, y, x):
+        return x * (self.indicator(y) - self.likelihood(w_array=current_w_array, array_points=array_points))
 
-    def gradiente_descent_calc(self, current_w_array, x_array, N, y, x):
-        assert len(current_w_array) == len(x_array)
-
-        return -1 * (y - (self.hypothesis(current_w_array, x_array))) * x
+    def indicator(self, y):
+        return y
 
 
-    def gradient_descent_runner(self, points, initial_w_array, learning_rate, num_iterations, cost_tolerance, verbosity=False):
+    def gradient_ascent_runner(self, points, initial_w_array, learning_rate, num_iterations, cost_tolerance, verbosity=False):
         w_array = initial_w_array
 
-        rss = self.compute_error_for_given_function(w_array, array_points=points)
+        score = self.score(w_array, array_points=points)
 
         iterations_count = 0
-        while rss >= cost_tolerance and iterations_count <= num_iterations:
+        while iterations_count <= num_iterations:
             iterations_count += 1
-
+            print("w_array", w_array)
             w_array = self.step_gradient(w_array, array(points), learning_rate)
 
-            rss = self.compute_error_for_given_function(w_array, array_points=points)
+
+            score = self.score(w_array, array_points=points)
 
             if verbosity == "vv":
-                print("Current RSS:", rss)  # item 2
+                print("Current RSS:", score)  # item 2
 
         if verbosity == "v" or verbosity == "vv":
             print()
-            print("---\nFinal RSS:", rss)
-        return w_array, rss
+            print("---\nFinal RSS:", score)
+        return w_array, score
 
     def predict(self, data):
         preds = []
@@ -101,8 +114,8 @@ class MyRegression():
     def run(self, learning_rate=0.00001, num_iterations=5000, cost_tolerance=float("-inf"), verbosity=False):
         initial_w_array = [0] * self.data.shape[1]
 
-        self.w_array, self.rss = self.gradient_descent_runner(self.data, initial_w_array, learning_rate, num_iterations, cost_tolerance,
-                                               verbosity)
+        self.w_array, self.rss = self.gradient_ascent_runner(self.data, initial_w_array, learning_rate, num_iterations, cost_tolerance,
+                                                             verbosity)
 
         if verbosity == "v" or verbosity == "vv":
             print("")
@@ -119,14 +132,13 @@ class MyRegression():
             return points
 
 if __name__ == "__main__":
-    mr = MyRegression("data/treino_clean.csv", header=True)
-
+    mr = MyLogisticRegression("data/iris.data", header=True)
 
     coeffs, rss = mr.run(learning_rate=0.00000002, num_iterations=1000)
 
-    preds = mr.predict(pd.read_csv("data/treino_clean.csv"))
-
-    print(preds)
+    # preds = mr.predict(pd.read_csv("data/treino_clean.csv"))
+    #
+    # print(preds)
 
 
 
