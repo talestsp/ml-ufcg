@@ -1,0 +1,25 @@
+model,score,tags,hidden_layer_sizes
+polynomial MLP,0.06884921261517103,hidden_layer_sizes=10,10
+linear MLP,0.06988965115972005,hidden_layer_sizes=10,10
+linear MLP,0.06922195203081327,hidden_layer_sizes=50,50
+polynomial MLP,0.0690430394844546,hidden_layer_sizes=50,50
+polynomial MLP,0.068322733373741,hidden_layer_sizes=100,100
+linear MLP,0.06894834545889693,hidden_layer_sizes=100,100
+polynomial MLP,0.07027867137716061,hidden_layer_sizes=150,150
+linear MLP,0.06951632205796486,hidden_layer_sizes=150,150
+polynomial MLP,0.07031518606012116,hidden_layer_sizes=300,300
+linear MLP,0.06813486455857319,hidden_layer_sizes=300,300
+linear MLP,0.06925832551727301,hidden_layer_sizes=450,450
+polynomial MLP,0.06940361671124337,hidden_layer_sizes=450,450
+linear MLP,0.07006599540685263,hidden_layer_sizes=600,600
+polynomial MLP,0.07168829332856926,hidden_layer_sizes=600,600
+linear MLP,0.07059246619505845,hidden_layer_sizes=1000,1000
+polynomial MLP,0.06908910903087939,hidden_layer_sizes=1000,1000
+linear MLP,0.07084931105455355,hidden_layer_sizes=3000,3000
+polynomial MLP,0.06898475434024022,hidden_layer_sizes=3000,3000
+linear MLP,0.06914584051013825,hidden_layer_sizes=5000,5000
+polynomial MLP,0.06885566183959482,hidden_layer_sizes=5000,5000
+linear MLP,0.0692986388168725,hidden_layer_sizes=7000,7000
+polynomial MLP,0.06902428954270048,hidden_layer_sizes=7000,7000
+polynomial MLP,0.0690208847788592,hidden_layer_sizes=9000,9000
+linear MLP,0.07063995950179269,hidden_layer_sizes=9000,9000

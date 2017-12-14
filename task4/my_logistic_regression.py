@@ -27,16 +27,6 @@ class MyLogisticRegression():
         # print("score", score)
         return 1 / (1 + (e ** (-score)))
 
-    def likelihood(self, w_array, array_points):
-        total = 1
-        for i in range(len(array_points)):
-            p_sigmoid = self.sigmoid(self.score(w_array, array_points))
-            # print("p_sigmoid", p_sigmoid)
-            # print("log(p_sigmoid)", log(p_sigmoid))
-            total = total * log(p_sigmoid)
-
-        return p_sigmoid
-
     def sum_products(self, w_array, x_array):
         assert len(w_array) == len(x_array)
 
@@ -55,9 +45,7 @@ class MyLogisticRegression():
 
             x_array = append(array(1), array_points[i, 0:tuple_len - 1])
             y = array_points[i, tuple_len - 1]
-
             for j in range(len(w_gradient_array)):
-                print(i)
                 w_gradient_array[j] += self.gradient_ascent_calc(current_w_array, array_points, y, x_array[j])
 
         # update coefficients
@@ -66,6 +54,16 @@ class MyLogisticRegression():
             new_w_array[i] = current_w_array[i] - (2 * learning_rate * w_gradient_array[i])
 
         return new_w_array
+
+    def likelihood(self, w_array, array_points):
+        total = 1
+        for i in range(len(array_points)):
+            p_sigmoid = self.sigmoid(self.score(w_array, array_points))
+            # print("p_sigmoid", p_sigmoid)
+            # print("log(p_sigmoid)", log(p_sigmoid))
+            total = total * log(p_sigmoid)
+
+        return p_sigmoid
 
     def gradient_ascent_calc(self, current_w_array, array_points, y, x):
         return x * (self.indicator(y) - self.likelihood(w_array=current_w_array, array_points=array_points))
@@ -132,7 +130,7 @@ class MyLogisticRegression():
             return points
 
 if __name__ == "__main__":
-    mr = MyLogisticRegression("data/iris.data", header=True)
+    mr = MyLogisticRegression("data/iris2.data", header=True)
 
     coeffs, rss = mr.run(learning_rate=0.00000002, num_iterations=1000)
 
